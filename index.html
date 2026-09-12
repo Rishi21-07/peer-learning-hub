@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peer Learning Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            backdrop-filter: blur(5px);
+        }
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.95);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: transparent;
+            overflow-y: auto;
+        }
+        .screen.active {
+            display: flex;
+        }
+        .screen::-webkit-scrollbar {
+            display: none;
+        }
+        .screen {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .inner-content {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 10;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #64748b;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 20px;
+            transition: all 0.2s;
+        }
+        .nav-item:hover {
+            color: #3b82f6;
+            background-color: #f0f9ff;
+            border-radius: 12px;
+        }
+        .nav-item.active {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        .nav-item i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .top-bar {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .content-area {
+            flex-grow: 1;
+            padding: 24px;
+            padding-bottom: 90px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- 1. Splash Screen -->
+        <div id="splashScreen" class="screen active" style="background-color: white; justify-content: center; align-items: center;">
+            <div class="text-center">
+                <div class="mb-6 relative">
+                    <i class="fas fa-book-open text-6xl text-blue-800"></i>
+                    <i class="fas fa-lightbulb text-4xl text-yellow-400 absolute -top-8 left-1/2 transform -translate-x-1/2"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-blue-900 mb-2">PEER LEARNING HUB</h1>
+                <p class="text-lg text-gray-600 mb-12">"Learn Together Grow Together"</p>
+                <div class="w-64 h-2 bg-gray-200 rounded-full overflow-hidden mx-auto">
+                    <div class="h-full bg-blue-600 w-1/2 rounded-full animate-pulse"></div>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">Loading...</p>
+            </div>
+        </div>
+
+        <!-- 2. Login Screen -->
+        <div id="loginScreen" class="screen">
+            <div class="relative z-10 p-6 flex flex-col items-center justify-center h-full w-full inner-content">
+                <div class="bg-white bg-opacity-95 rounded-3xl shadow-2xl p-8 max-w-md w-full backdrop-blur-md">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-book-reader text-5xl text-blue-600 mb-3"></i>
+                        <h2 class="text-4xl font-extrabold text-gray-800 mb-2">Welcome!</h2>
+                        <p class="text-gray-500 text-lg">Peer Learning Hub</p>
+                    </div>
+                    
+                    <div class="w-full space-y-5 mb-6">
+                        <div class="relative">
+                            <i class="far fa-envelope absolute left-4 top-4 text-gray-400 text-lg"></i>
+                            <input type="email" id="loginEmail" placeholder="Email Address" class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-gray-800">
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-4 top-4 text-gray-400 text-lg"></i>
+                            <input type="password" id="loginPassword" placeholder="Password" class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-gray-800">
+                        </div>
+                    </div>
+                    
+                    <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 mb-4 transition text-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Login</button>
+                    
+                    <div class="flex items-center w-full mb-4 opacity-70">
+                        <div class="flex-grow border-t border-gray-300"></div>
+                        <span class="px-4 text-gray-500 text-sm font-semibold">OR</span>
+                        <div class="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    
+                    <button onclick="navigateTo('signUpScreen')" class="w-full bg-indigo-50 text-indigo-700 py-3.5 rounded-xl font-bold hover:bg-indigo-100 transition text-lg border border-indigo-100">Create an Account</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Sign Up Screen -->
+        <div id="signUpScreen" class="screen">
+            <div class="relative z-10 p-6 flex flex-col items-center justify-center h-full w-full inner-content py-10">
+                <div class="bg-white bg-opacity-95 rounded-3xl shadow-2xl p-8 max-w-md w-full backdrop-blur-md">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                            <i class="fas fa-user-plus text-3xl text-indigo-600"></i>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-gray-800">Join the Community</h2>
+                    </div>
+                    
+                    <div class="w-full space-y-4 mb-8">
+                        <div class="relative">
+                            <i class="far fa-user absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="text" id="regName" placeholder="Full Name" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-university absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="text" id="regCollege" placeholder="College Name" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-building absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="text" id="regDept" placeholder="Department (e.g. IT, CS, MECH)" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-graduation-cap absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="text" id="regYear" placeholder="Year (e.g. 1st Year)" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-star absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="text" id="regInterests" placeholder="Interests (e.g. AI, Web Dev)" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700">
+                        </div>
+                        <div class="relative">
+                            <i class="far fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="email" id="regEmail" placeholder="Email" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-phone-alt absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="tel" id="regPhone" placeholder="Phone Number" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="password" id="regPassword" placeholder="Password" class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    
+                    <button onclick="handleSignup()" class="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold hover:bg-indigo-700 mb-4 transition text-lg shadow-md">Sign Up</button>
+                    <button onclick="navigateTo('loginScreen')" class="w-full text-gray-500 py-3 rounded-xl font-semibold hover:bg-gray-50 transition border border-transparent hover:border-gray-200">Back to Login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Home / Dashboard Screen -->
+        <div id="homeScreen" class="screen">
+            <div class="p-8 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-b-3xl shadow-sm mb-4 border-b border-blue-200">
+                <div class="inner-content">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden shadow-sm">
+                                <i class="fas fa-user-circle text-4xl text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-gray-800 text-xl" id="userNameDisplay">Hello, Student!</h2>
+                                <p class="text-sm text-gray-500">Keep Learning Keep Growing</p>
+                            </div>
+                        </div>
+                        <div class="relative cursor-pointer" onclick="navigateTo('notificationsScreen')">
+                            <i class="far fa-bell text-2xl text-gray-600 hover:text-blue-500 transition"></i>
+                            <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                        </div>
+                    </div>
+                    <div class="relative max-w-2xl mx-auto">
+                        <i class="fas fa-search absolute left-4 top-4 text-gray-400 text-lg"></i>
+                        <input type="text" id="homeSearchInput" onkeyup="if(event.key === 'Enter') searchFromHome()" placeholder="Search notes... (Press Enter)" class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full bg-white bg-opacity-95 focus:outline-none focus:border-blue-500 shadow-sm text-base">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-area pt-0 inner-content">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+                    <div onclick="navigateTo('shareNotesScreen')" class="bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-lg transition border-b-4 border-green-400 shadow-sm">
+                        <i class="fas fa-file-alt text-4xl text-green-500 mb-3"></i>
+                        <span class="text-sm md:text-base font-bold text-gray-700">Share Notes</span>
+                    </div>
+                    <div onclick="navigateTo('doubtCornerScreen')" class="bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-lg transition border-b-4 border-purple-400 shadow-sm">
+                        <i class="fas fa-question-circle text-4xl text-purple-500 mb-3"></i>
+                        <span class="text-sm md:text-base font-bold text-gray-700">Doubt Corner</span>
+                    </div>
+                    <div onclick="navigateTo('findBuddyScreen')" class="bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-lg transition border-b-4 border-blue-400 shadow-sm">
+                        <i class="fas fa-user-plus text-4xl text-blue-500 mb-3"></i>
+                        <span class="text-sm md:text-base font-bold text-gray-700">Find Buddy</span>
+                    </div>
+                    <div onclick="navigateTo('peerTeachingScreen')" class="bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-lg transition border-b-4 border-indigo-400 shadow-sm">
+                        <i class="fas fa-chalkboard-teacher text-4xl text-indigo-500 mb-3"></i>
+                        <span class="text-sm md:text-base font-bold text-gray-700">Peer Teaching</span>
+                    </div>
+                    <div onclick="navigateTo('studyGroupsScreen')" class="bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-lg transition border-b-4 border-teal-400 shadow-sm">
+                        <i class="fas fa-users text-4xl text-teal-500 mb-3"></i>
+                        <span class="text-sm md:text-base font-bold text-gray-700">Study Groups</span>
+                    </div>
+                    <div onclick="navigateTo('pointsScreen')" class="bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-lg transition border-b-4 border-yellow-400 shadow-sm">
+                        <i class="fas fa-star text-4xl text-yellow-500 mb-3"></i>
+                        <span class="text-sm md:text-base font-bold text-gray-700">My Points</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Nav appended dynamically by script below -->
+        </div>
+
+        <!-- 5. Share Notes Screen -->
+        <div id="shareNotesScreen" class="screen">
+            <div class="top-bar">
+                <i onclick="navigateTo('homeScreen')" class="fas fa-arrow-left text-gray-600 mr-4 cursor-pointer text-xl hover:text-blue-500 transition px-4 py-2"></i>
+                <h2 class="font-bold text-xl text-gray-800">Share Notes</h2>
+            </div>
+            <div class="content-area inner-content">
+                <input type="file" id="noteFile" class="hidden">
+                <div onclick="document.getElementById('noteFile').click()" class="border-2 border-dashed border-blue-300 rounded-2xl p-12 flex flex-col items-center justify-center text-center bg-white shadow-sm mb-8 mt-4 cursor-pointer hover:bg-blue-50 transition relative overflow-hidden group">
+                    <i class="fas fa-cloud-upload-alt text-6xl text-blue-400 mb-4 group-hover:scale-110 transition-transform"></i>
+                    <p class="font-bold text-gray-700 text-lg mb-1" id="fileNameDisplay">Click to Upload Notes</p>
+                    <p class="text-sm text-gray-500">(PDF, Images, etc.)</p>
+                </div>
+                
+                <div class="space-y-5 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <input list="subjectsList" id="noteSubject" placeholder="Type or Select Subject..." class="w-full p-4 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-700 transition">
+                    <datalist id="subjectsList">
+                        <option value="Data Structures">
+                        <option value="DBMS">
+                        <option value="Operating System">
+                        <option value="Computer Networks">
+                    </datalist>
+                    
+                    <input type="text" id="noteTitle" placeholder="Document Title" class="w-full p-4 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-700 transition">
+                    <textarea id="noteDescription" placeholder="Add Description (optional)" rows="4" class="w-full p-4 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-700 transition"></textarea>
+                </div>
+                
+                <button onclick="handleUpload()" class="w-full bg-green-500 text-white py-4 rounded-xl font-bold text-lg mt-8 hover:bg-green-600 transition shadow-lg flex justify-center items-center">
+                    <span id="uploadBtnText">Upload Document</span>
+                    <i id="uploadSpinner" class="fas fa-spinner fa-spin ml-3 hidden text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 6. Doubt Corner Screen -->
+        <div id="doubtCornerScreen" class="screen">
+            <div class="top-bar">
+                <i onclick="navigateTo('homeScreen')" class="fas fa-arrow-left text-gray-600 mr-4 cursor-pointer text-xl hover:text-blue-500 transition px-4 py-2"></i>
+                <h2 class="font-bold text-xl text-gray-800">Doubt Corner</h2>
+            </div>
+            <div class="p-6 bg-white shadow-sm border-b">
+                <div class="inner-content relative flex items-center space-x-2">
+                    <div class="relative flex-grow">
+                        <i class="fas fa-search absolute left-4 top-4 text-gray-400 text-lg"></i>
+                        <input type="text" id="searchDoubtInput" onkeyup="renderDoubts()" placeholder="Search for existing doubts..." class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base transition">
+                    </div>
+                    <button onclick="document.getElementById('searchDoubtInput').value=''; renderDoubts()" class="p-3 text-gray-500 hover:text-red-500"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="content-area inner-content space-y-4 pb-24" id="doubtsList">
+                <!-- Doubts loaded here -->
+            </div>
+            <div class="absolute bottom-20 left-0 right-0 p-4 bg-transparent pointer-events-none flex justify-center">
+                <div class="inner-content w-full pointer-events-auto">
+                    <button onclick="promptDoubt()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-xl flex items-center justify-center space-x-2">
+                        <i class="fas fa-plus"></i>
+                        <span>Ask a Doubt</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Find Study Buddy Screen -->
+        <div id="findBuddyScreen" class="screen">
+            <div class="top-bar">
+                <i onclick="navigateTo('homeScreen')" class="fas fa-arrow-left text-gray-600 mr-4 cursor-pointer text-xl hover:text-blue-500 transition px-4 py-2"></i>
+                <h2 class="font-bold text-xl text-gray-800">Find Study Buddy</h2>
+            </div>
+            
+            <div class="p-6 bg-white shadow-sm border-b">
+                <div class="inner-content">
+                    
+                    <div class="bg-indigo-50 p-4 rounded-2xl mb-5 border border-indigo-100 shadow-inner">
+                        <h4 class="font-bold text-indigo-800 mb-3 flex items-center"><i class="fas fa-broadcast-tower mr-2"></i>Broadcast Buddy Request</h4>
+                        <input type="text" id="buddySubject" placeholder="What subject?" class="w-full p-3 border border-indigo-200 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                        <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3 mb-3">
+                            <input type="datetime-local" id="buddyTime" class="flex-grow p-3 border border-indigo-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                        </div>
+                        <button onclick="postActivity('buddy_request')" class="w-full bg-indigo-500 text-white py-3 rounded-xl font-bold hover:bg-indigo-600 transition shadow-sm">Send Request</button>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 border-t pt-5 border-gray-100">
+                        <input type="text" id="buddySubjectFilter" placeholder="Any Subject/Interest..." class="flex-1 p-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-700 text-base focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <select id="buddyYearFilter" class="flex-1 p-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-700 text-base focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="">Any Year</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                        <div class="flex space-x-2">
+                            <button onclick="renderBuddies()" class="flex-1 md:w-24 bg-blue-500 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition shadow-sm">Search</button>
+                            <button onclick="document.getElementById('buddySubjectFilter').value=''; document.getElementById('buddyYearFilter').value=''; renderBuddies()" class="px-4 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-300 transition shadow-sm"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-area inner-content pt-6">
+                <div class="space-y-4" id="buddiesList">
+                    <!-- Buddies loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- My Points Screen -->
+        <div id="pointsScreen" class="screen">
+            <div class="top-bar">
+                <i onclick="navigateTo('homeScreen')" class="fas fa-arrow-left text-gray-600 mr-4 cursor-pointer text-xl hover:text-blue-500 transition px-4 py-2"></i>
+                <h2 class="font-bold text-xl text-gray-800">My Points</h2>
+            </div>
+            <div class="content-area inner-content pt-6 space-y-5">
+                <div class="bg-gradient-to-br from-yellow-400 to-yellow-500 p-8 rounded-2xl text-white text-center shadow-lg">
+                    <i class="fas fa-trophy text-5xl mb-3 opacity-90"></i>
+                    <h3 class="font-bold text-3xl mb-1" id="pointsScreenTotal">0 pts</h3>
+                    <p class="text-yellow-100 font-medium text-sm">Keep earning by sharing and helping!</p>
+                </div>
+                <div class="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-6">
+                    <h3 class="font-bold text-gray-800 text-lg mb-4 flex items-center"><i class="fas fa-list text-gray-500 mr-2"></i>Points Breakdown</h3>
+                    <ul class="text-gray-600 text-sm space-y-4 font-medium" id="pointsBreakdownList">
+                        <!-- Populated dynamically via JS -->
+                        <li class="flex justify-between items-center text-gray-500 italic">Loading...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Profile Screen -->
+        <div id="profileScreen" class="screen">
+            <div class="top-bar">
+                <i onclick="navigateTo('homeScreen')" class="fas fa-arrow-left text-gray-600 mr-4 cursor-pointer text-xl hover:text-blue-500 transition px-4 py-2"></i>
+                <h2 class="font-bold text-xl text-gray-800">My Profile</h2>
+            </div>
+            
+            <div class="bg-gradient-to-br from-gray-50 to-blue-50 p-8 border-b border-gray-100">
+                <div class="inner-content flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
+                    <div class="w-24 h-24 rounded-full bg-white flex items-center justify-center mr-0 md:mr-6 mb-4 md:mb-0 shadow-lg border-4 border-blue-100 overflow-hidden text-blue-500">
+                        <i class="fas fa-user-circle text-7xl"></i>
+                    </div>
+                    <div class="pt-2 flex-grow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h2 class="font-bold text-2xl text-gray-800 mb-1" id="profileNameDisplay">Student Name</h2>
+                                <p class="text-base text-gray-600 font-medium" id="profileDeptDisplay">IT Department</p>
+                                <p class="text-sm text-gray-500 mt-1" id="profileYearDisplay">3rd Year</p>
+                            </div>
+                            <button onclick="openEditProfile()" class="bg-white text-gray-600 p-3 rounded-full hover:bg-blue-50 hover:text-blue-600 transition shadow-sm border border-gray-200">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white border-b border-gray-100 shadow-sm">
+                <div class="inner-content grid grid-cols-3 divide-x divide-gray-100 p-6 text-center">
+                    <div>
+                        <p class="font-bold text-blue-600 text-3xl mb-1" id="statNotes">0</p>
+                        <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Notes</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-yellow-500 text-3xl mb-1" id="statPoints">50</p>
+                        <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Points</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-green-500 text-3xl mb-1" id="statHelped">0</p>
+                        <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Helped</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-area inner-content pt-8 px-4 md:px-0 bg-transparent">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-50">
+                    <div onclick="navigateTo('resourcesScreen')" class="px-6 py-5 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition group">
+                        <div class="flex items-center">
+                            <i class="fas fa-book-open w-8 text-pink-500 text-center mr-4 text-xl group-hover:scale-110 transition"></i>
+                            <span class="text-gray-700 font-semibold text-lg">My Notes</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-300"></i>
+                    </div>
+                    <div onclick="navigateTo('doubtCornerScreen')" class="px-6 py-5 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition group">
+                        <div class="flex items-center">
+                            <i class="fas fa-question-circle w-8 text-blue-500 text-center mr-4 text-xl group-hover:scale-110 transition"></i>
+                            <span class="text-gray-700 font-semibold text-lg">My Doubts</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-300"></i>
+                    </div>
+                    <div class="px-6 py-5 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition group">
+                        <div class="flex items-center">
+                            <i class="fas fa-users w-8 text-green-500 text-center mr-4 text-xl group-hover:scale-110 transition"></i>
+                            <span class="text-gray-700 font-semibold text-lg">My Groups</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-300"></i>
+                    </div>
+                    <div onclick="logout()" class="px-6 py-5 flex items-center justify-between cursor-pointer hover:bg-red-50 transition group">
+                        <div class="flex items-center">
+                            <i class="fas fa-sign-out-alt w-8 text-red-500 text-center mr-4 text-xl group-hover:scale-110 transition"></i>
+                            <span class="text-red-600 font-semibold text-lg">Logout</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Screen -->
+        <div id="notificationsScreen" class="screen">
+            <div class="top-bar">
+                <i onclick="navigateTo('homeScreen')" class="fas fa-arrow-left text-gray-600 mr-4 cursor-pointer text-xl hover:text-blue-500 transition px-4 py-2"></i>
+                <h2 class="font-bold text-xl text-gray-800">Notifications</h2>
+            </div>
+            <div class="content-area inner-content space-y-4 pt-6 pb-20" id="notificationsList">
+                <p class="text-center text-gray-500 mt-10">Loading notifications...</p>
+            </div>
+        </div>
+
+        <!-- Peer Teaching Screen -->
+        <div id="peerTeachingScreen" class="screen">
+            <div class="top-bar">
+                <i onclick="navigateTo('homeScreen')" class="fas fa-arrow-left text-gray-600 mr-4 cursor-pointer text-xl hover:text-blue-500 transition px-4 py-2"></i>
+                <h2 class="font-bold text-xl text-gray-800">Peer Teaching</h2>
+            </div>
+            <div class="content-area inner-content pt-6 space-y-5">
+                <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100 text-blue-800 text-sm font-medium mb-4">
+                    Share what you know! Offer a teaching session on a specific topic, and peers will see it in their notifications.
+                </div>
+                <input type="text" id="teachSubject" placeholder="Subject (e.g. Java, DBMS)" class="w-full p-4 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-700">
+                <textarea id="teachDetails" placeholder="What exactly will you teach? (e.g. I will explain pointers and memory allocation)" rows="4" class="w-full p-4 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-700"></textarea>
+                <input type="datetime-local" id="teachTime" class="w-full p-4 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-700">
+                <button onclick="postActivity('peer_teaching')" class="w-full bg-indigo-500 text-white py-4 rounded-xl font-bold text-lg mt-4 hover:bg-indigo-600 transition shadow-lg">Broadcast Session</button>
+            </div>
+        </div>
+
+        <!-- Study Groups Screen -->
+        <div id="studyGroupsScreen" class="screen">
+            <div class="top-bar">
+                <i onclick="navigateTo('homeScreen')" class="fas fa-arrow-left text-gray-600 mr-4 cursor-pointer text-xl hover:text-blue-500 transition px-4 py-2"></i>
+                <h2 class="font-bold text-xl text-gray-800">Study Groups</h2>
+            </div>
+            <div class="content-area inner-content pt-6 space-y-5">
+                <div class="bg-teal-50 p-6 rounded-2xl border border-teal-100 text-teal-800 text-sm font-medium mb-4">
+                    Looking to study with a group? Broadcast your interest and let others join you!
+                </div>
+                <input type="text" id="groupSubject" placeholder="Subject/Interest (e.g. Machine Learning)" class="w-full p-4 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 text-gray-700">
+                <textarea id="groupDetails" placeholder="Details (e.g. Let's solve previous year question papers together this weekend!)" rows="4" class="w-full p-4 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 text-gray-700"></textarea>
+                <input type="datetime-local" id="groupTime" class="w-full p-4 border rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 text-gray-700 mt-4">
+                <button onclick="postActivity('study_group')" class="w-full bg-teal-500 text-white py-4 rounded-xl font-bold text-lg mt-4 hover:bg-teal-600 transition shadow-lg">Broadcast Group Request</button>
+            </div>
+        </div>
+
+        <!-- Resources Screen -->
+        <div id="resourcesScreen" class="screen">
+            <div class="top-bar">
+                <i onclick="navigateTo('homeScreen')" class="fas fa-arrow-left text-gray-600 mr-4 cursor-pointer text-xl hover:text-blue-500 transition px-4 py-2"></i>
+                <h2 class="font-bold text-xl text-gray-800 flex-grow text-center pr-12">Resources</h2>
+            </div>
+            <div class="p-6 bg-white shadow-sm border-b">
+                <div class="inner-content relative">
+                    <i class="fas fa-search absolute left-4 top-4 text-gray-400 text-lg"></i>
+                    <input type="text" id="searchResourceInput" onkeyup="renderNotes()" placeholder="Search notes by subject or title..." class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base transition">
+                </div>
+            </div>
+            <div class="content-area inner-content space-y-4" id="notesList">
+                <p class="text-center text-gray-500 mt-10">Loading resources...</p>
+            </div>
+        </div>
+
+        <!-- Edit Profile Modal -->
+        <div id="editProfileModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex justify-center items-center p-4">
+            <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Edit Profile</h3>
+                
+                <div class="space-y-4">
+                    <div><label class="block text-sm text-gray-500 mb-1">Full Name</label><input type="text" id="editName" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400"></div>
+                    <div><label class="block text-sm text-gray-500 mb-1">Email</label><input type="email" id="editEmail" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400"></div>
+                    <div><label class="block text-sm text-gray-500 mb-1">Phone Number</label><input type="tel" id="editPhone" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400"></div>
+                    
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">Department</label>
+                        <select id="editDept" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400">
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Information Tech">Information Tech</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Civil">Civil</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">Year</label>
+                        <select id="editYear" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400">
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+                    
+                    <div><label class="block text-sm text-gray-500 mb-1">Interests</label><input type="text" id="editInterests" class="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400"></div>
+                </div>
+                
+                <div class="flex space-x-3 mt-8">
+                    <button onclick="document.getElementById('editProfileModal').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-200 transition">Cancel</button>
+                    <button onclick="saveProfile()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentUser = JSON.parse(localStorage.getItem('user')) || null;
+
+        // Data arrays for client-side search filtering
+        let allNotes = [];
+        let allDoubts = [];
+        let allBuddies = [];
+
+        // Render Bottom Navigation across root screens (Chat removed per request)
+        const rootScreens = ['homeScreen', 'resourcesScreen', 'profileScreen'];
+        rootScreens.forEach((id, index) => {
+            const screen = document.getElementById(id);
+            if(screen && !id.includes('login') && !id.includes('signUp')) {
+                const nav = document.createElement('div');
+                nav.className = 'bottom-nav';
+                nav.innerHTML = `
+                    <div class="inner-content flex justify-around w-full">
+                        <div class="nav-item ${index===0?'active':''}" onclick="navigateTo('homeScreen')">
+                            <i class="fas fa-home"></i><span>Home</span>
+                        </div>
+                        <div class="nav-item ${index===1?'active':''}" onclick="navigateTo('resourcesScreen')">
+                            <i class="fas fa-book"></i><span>Resources</span>
+                        </div>
+                        <div class="nav-item ${index===2?'active':''}" onclick="navigateTo('profileScreen')">
+                            <i class="far fa-user"></i><span>Profile</span>
+                        </div>
+                    </div>
+                `;
+                screen.appendChild(nav);
+            }
+        });
+
+        // Initialize App
+        setTimeout(() => {
+            if(currentUser) {
+                document.getElementById('userNameDisplay').textContent = "Hello, " + currentUser.name + "!";
+                document.getElementById('profileNameDisplay').textContent = currentUser.name;
+                navigateTo('homeScreen');
+            } else {
+                navigateTo('loginScreen');
+            }
+        }, 1500);
+
+        function navigateTo(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            // Trigger specific screen loaders
+            if(screenId === 'pointsScreen') loadProfileStats();
+            if(screenId === 'resourcesScreen') loadNotes();
+            if(screenId === 'doubtCornerScreen') loadDoubts();
+            if(screenId === 'findBuddyScreen') loadBuddies();
+            if(screenId === 'profileScreen') loadProfileStats();
+            if(screenId === 'notificationsScreen') loadNotifications();
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            currentUser = null;
+            navigateTo('loginScreen');
+        }
+
+        // --- AUTH ---
+        async function handleSignup() {
+            const name = document.getElementById('regName').value;
+            const college = document.getElementById('regCollege').value;
+            const dept = document.getElementById('regDept').value;
+            const year = document.getElementById('regYear').value;
+            const interests = document.getElementById('regInterests').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value;
+            const password = document.getElementById('regPassword').value;
+            if(!name || !email || !password || !dept || !year) return alert("Please fill in all required fields (Name, Dept, Year, Email, Password)");
+
+            try {
+                const res = await fetch(`${API_BASE}/signup`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name, college, department: dept, year, interests, email, phone: phone, password})
+                });
+                const data = await res.json();
+                if(data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    document.getElementById('userNameDisplay').textContent = "Hello, " + currentUser.name + "!";
+                    document.getElementById('profileNameDisplay').textContent = currentUser.name;
+                    navigateTo('homeScreen');
+                } else alert(data.message);
+            } catch (err) { alert("Server error: " + err.message); }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            if(!email || !password) return alert("Please enter email and password");
+
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, password})
+                });
+                const data = await res.json();
+                if(data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    document.getElementById('userNameDisplay').textContent = "Hello, " + currentUser.name + "!";
+                    document.getElementById('profileNameDisplay').textContent = currentUser.name;
+                    navigateTo('homeScreen');
+                } else alert(data.message);
+            } catch (err) { alert("Server error: " + err.message); }
+        }
+
+        // --- SEARCH FUNCTIONS ---
+        function searchFromHome() {
+            const val = document.getElementById('homeSearchInput').value;
+            document.getElementById('searchResourceInput').value = val;
+            document.getElementById('homeSearchInput').value = '';
+            navigateTo('resourcesScreen');
+        }
+
+        // --- UPLOAD ---
+        document.getElementById('noteFile').addEventListener('change', function(e) {
+            document.getElementById('fileNameDisplay').textContent = this.files[0] ? this.files[0].name : "Click to Upload Notes";
+        });
+
+        async function handleUpload() {
+            const fileInput = document.getElementById('noteFile');
+            const subject = document.getElementById('noteSubject').value;
+            const title = document.getElementById('noteTitle').value;
+            const description = document.getElementById('noteDescription').value;
+
+            if(!fileInput.files[0] || !title || !subject) return alert("Please select a file, subject, and title.");
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('user_id', currentUser.id);
+            formData.append('user_name', currentUser.name);
+            formData.append('subject', subject);
+            formData.append('title', title);
+            formData.append('description', description);
+
+            document.getElementById('uploadBtnText').textContent = "Uploading...";
+            document.getElementById('uploadSpinner').classList.remove('hidden');
+
+            try {
+                const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if(data.success) {
+                    alert("Note uploaded successfully!");
+                    fileInput.value = ""; document.getElementById('fileNameDisplay').textContent = "Click to Upload Notes";
+                    document.getElementById('noteSubject').value = ""; document.getElementById('noteTitle').value = ""; document.getElementById('noteDescription').value = "";
+                    navigateTo('resourcesScreen');
+                } else alert(data.message);
+            } catch (err) { alert("Server error: " + err.message); }
+            finally {
+                document.getElementById('uploadBtnText').textContent = "Upload Document";
+                document.getElementById('uploadSpinner').classList.add('hidden');
+            }
+        }
+
+        // --- NOTES (RESOURCES) ---
+        async function loadNotes() {
+            try {
+                const res = await fetch(`${API_BASE}/notes`);
+                allNotes = await res.json();
+                renderNotes();
+            } catch(e) { console.error(e); }
+        }
+
+        function renderNotes() {
+            const query = document.getElementById('searchResourceInput').value.toLowerCase();
+            const container = document.getElementById('notesList');
+            
+            const filtered = allNotes.filter(n => 
+                n.title.toLowerCase().includes(query) || 
+                n.subject.toLowerCase().includes(query)
+            );
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="text-center mt-20"><i class="fas fa-folder-open text-6xl text-gray-300 mb-4"></i><p class="text-gray-500 text-lg font-bold">Not available</p><p class="text-gray-400 text-sm mt-2">No notes match your search.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(n => `
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition">
+                    <div>
+                        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-md uppercase tracking-wider">${n.subject}</span>
+                        <h3 class="font-bold text-gray-800 mt-3 text-lg">${n.title}</h3>
+                        <p class="text-sm text-gray-500 mt-1">Shared by <span class="font-semibold">${n.user_name}</span></p>
+                    </div>
+                    <a href="/uploads/${n.filename}" target="_blank" class="w-14 h-14 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center hover:bg-blue-500 hover:text-white transition shadow-sm">
+                        <i class="fas fa-download text-xl"></i>
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        // --- DOUBTS ---
+        async function loadDoubts() {
+            try {
+                const res = await fetch(`${API_BASE}/doubts`);
+                allDoubts = await res.json();
+                renderDoubts();
+            } catch(e) { console.error(e); }
+        }
+
+        function renderDoubts() {
+            const query = document.getElementById('searchDoubtInput').value.toLowerCase();
+            const container = document.getElementById('doubtsList');
+            
+            const filtered = allDoubts.filter(d => 
+                d.title.toLowerCase().includes(query) || 
+                d.user_name.toLowerCase().includes(query)
+            );
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="text-center mt-12"><i class="fas fa-comment-slash text-6xl text-gray-300 mb-4"></i><p class="text-gray-500 text-lg font-bold">Not available</p><p class="text-gray-400 text-sm mt-2">No doubts match your search.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(d => `
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition">
+                    <div class="flex items-start space-x-4 cursor-pointer" onclick="toggleDoubt(${d.id})">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold flex-shrink-0 text-xl">${d.user_name.charAt(0).toUpperCase()}</div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-gray-800 mb-2 text-base leading-snug">${d.title}</h3>
+                            <div class="flex items-center text-xs text-gray-500 font-medium space-x-3">
+                                <span><i class="far fa-user mr-1"></i>${d.user_name}</span>
+                                <span><i class="far fa-comment-dots mr-1"></i>${d.answers_count} answers</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="doubt-answers-${d.id}" class="hidden mt-4 pt-4 border-t border-gray-100">
+                        <p class="text-center text-xs text-gray-400">Loading answers...</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function toggleDoubt(id) {
+            const div = document.getElementById(`doubt-answers-${id}`);
+            if(!div.classList.contains('hidden')) { div.classList.add('hidden'); return; }
+            div.classList.remove('hidden');
+            div.innerHTML = `<p class="text-center text-xs text-gray-400">Loading answers...</p>`;
+            
+            try {
+                const res = await fetch(`${API_BASE}/doubts/${id}/answers`);
+                const answers = await res.json();
+                
+                let ansHtml = answers.map(a => `
+                    <div class="bg-gray-50 p-4 rounded-xl mb-3 flex items-start space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 font-bold flex items-center justify-center flex-shrink-0 text-xs">${a.user_name.charAt(0).toUpperCase()}</div>
+                        <div class="flex-grow">
+                            <p class="text-sm font-bold text-gray-800">${a.user_name}</p>
+                            <p class="text-sm text-gray-600 mt-1">${a.text}</p>
+                            <div class="flex items-center space-x-4 mt-2">
+                                <button onclick="voteAnswer(${a.id}, 'up', ${id})" class="text-xs text-gray-500 hover:text-green-500"><i class="fas fa-thumbs-up mr-1"></i>${a.upvotes}</button>
+                                <button onclick="voteAnswer(${a.id}, 'down', ${id})" class="text-xs text-gray-500 hover:text-red-500"><i class="fas fa-thumbs-down mr-1"></i>${a.downvotes}</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                if(answers.length === 0) ansHtml = `<p class="text-sm text-gray-500 italic mb-3">No answers yet. Be the first to help!</p>`;
+                
+                div.innerHTML = ansHtml + `
+                    <div class="flex mt-3 space-x-2">
+                        <input type="text" id="answerInput-${id}" placeholder="Type the correct answer..." class="flex-grow p-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-400">
+                        <button onclick="postAnswer(${id})" class="bg-blue-500 text-white px-4 rounded-lg text-sm font-bold hover:bg-blue-600 transition">Reply</button>
+                    </div>
+                `;
+            } catch(e) { console.error(e); }
+        }
+
+        async function postAnswer(doubtId) {
+            const text = document.getElementById(`answerInput-${doubtId}`).value;
+            if(!text) return;
+            try {
+                await fetch(`${API_BASE}/doubts/${doubtId}/answers`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: currentUser.id, user_name: currentUser.name, text})
+                });
+                toggleDoubt(doubtId); toggleDoubt(doubtId); // reload
+                loadDoubts(); // update counts
+            } catch(e) { console.error(e); }
+        }
+
+        async function voteAnswer(answerId, type, doubtId) {
+            try {
+                await fetch(`${API_BASE}/answers/${answerId}/vote`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({vote: type})
+                });
+                toggleDoubt(doubtId); toggleDoubt(doubtId); // reload
+            } catch(e) { console.error(e); }
+        }
+
+        async function promptDoubt() {
+            const title = prompt("What's your doubt? (You can include your subject/topic!)");
+            if(title && title.trim()) {
+                await fetch(`${API_BASE}/doubts`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: currentUser.id, user_name: currentUser.name, title})
+                });
+                loadDoubts();
+            }
+        }
+
+        // --- FIND BUDDY ---
+        async function loadBuddies() {
+            try {
+                if(!currentUser) return;
+                const res = await fetch(`${API_BASE}/buddies?user_id=${currentUser.id}`);
+                allBuddies = await res.json();
+                renderBuddies();
+            } catch(e) { console.error(e); }
+        }
+
+        function renderBuddies() {
+            const subjectQuery = document.getElementById('buddySubjectFilter').value.toLowerCase();
+            const yearQuery = document.getElementById('buddyYearFilter').value.toLowerCase();
+            const container = document.getElementById('buddiesList');
+            
+            const filtered = allBuddies.filter(b => {
+                const matchesSubject = !subjectQuery || 
+                                       (b.interests && b.interests.toLowerCase().includes(subjectQuery)) || 
+                                       (b.department && b.department.toLowerCase().includes(subjectQuery));
+                const matchesYear = !yearQuery || (b.year && b.year.toLowerCase() === yearQuery);
+                return matchesSubject && matchesYear;
+            });
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<p class="text-lg font-bold text-gray-500 text-center py-10 bg-white rounded-xl border border-gray-100 shadow-sm">Not available</p>`;
+                return;
+            }
+            
+            const colors = ['green', 'purple', 'blue', 'pink', 'yellow'];
+            container.innerHTML = filtered.map((b, i) => {
+                const c = colors[i % colors.length];
+                return `
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center hover:shadow-md transition">
+                    <div class="w-16 h-16 rounded-full bg-${c}-100 flex items-center justify-center mr-4 overflow-hidden text-${c}-600 text-3xl font-bold shadow-inner">
+                        ${b.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-lg text-gray-800">${b.name}</h4>
+                        <p class="text-sm text-gray-500 font-medium">${b.year || 'N/A'} &bull; ${b.department || 'N/A'}</p>
+                        <p class="text-xs text-gray-600 mt-2 bg-gray-50 inline-block px-2 py-1 rounded">Interested in: ${b.interests || 'Any'}</p>
+                    </div>
+                    <button class="px-5 py-2.5 bg-blue-50 text-blue-600 text-sm font-bold rounded-xl hover:bg-blue-500 hover:text-white transition shadow-sm border border-blue-100">Connect</button>
+                </div>`
+            }).join('');
+        }
+
+        // --- ACTIVITIES & NOTIFICATIONS ---
+        async function postActivity(type) {
+            let subject = "", details = "", time_info = "";
+
+            function formatDateTime(dtString) {
+                if(!dtString) return "";
+                const d = new Date(dtString);
+                return d.toLocaleString(undefined, {
+                    weekday: 'short', month: 'short', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            }
+
+            if(type === 'peer_teaching') {
+                subject = document.getElementById('teachSubject').value;
+                details = document.getElementById('teachDetails').value;
+                time_info = formatDateTime(document.getElementById('teachTime').value);
+                if(!subject) return alert("Please fill subject!");
+            } else if(type === 'study_group') {
+                subject = document.getElementById('groupSubject').value;
+                details = document.getElementById('groupDetails').value;
+                time_info = formatDateTime(document.getElementById('groupTime').value); 
+                if(!subject) return alert("Please fill group topic!");
+            } else if(type === 'buddy_request') {
+                subject = document.getElementById('buddySubject').value;
+                details = "Looking for a buddy to match with and study together!";
+                time_info = formatDateTime(document.getElementById('buddyTime').value);
+                if(!subject) return alert("Please fill subject!");
+            }
+
+            const body = {
+                user_id: currentUser.id, user_name: currentUser.name,
+                act_type: type, subject: subject, details: details, time_info: time_info
+            };
+
+            try {
+                await fetch(`${API_BASE}/activities`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                alert("Broadcast sent! Others will see it in their notifications.");
+                
+                if(type === 'peer_teaching') {
+                    document.getElementById('teachSubject').value = '';
+                    document.getElementById('teachDetails').value = '';
+                    document.getElementById('teachTime').value = '';
+                } else if(type === 'study_group') {
+                    document.getElementById('groupSubject').value = '';
+                    document.getElementById('groupDetails').value = '';
+                    document.getElementById('groupTime').value = '';
+                } else if (type === 'buddy_request') {
+                    document.getElementById('buddySubject').value = '';
+                    document.getElementById('buddyTime').value = '';
+                }
+                navigateTo('homeScreen');
+            } catch(e) { alert("Error sending broadcast"); }
+        }
+
+        async function expressInterest(targetUserId) {
+            try {
+                await fetch(`${API_BASE}/express_interest`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({target_user_id: targetUserId, interested_user_id: currentUser.id})
+                });
+                alert("Interest expressed! The owner has received your contact details.");
+                loadNotifications();
+            } catch(e) { console.error(e); }
+        }
+
+        function togglePinNotif(compId) {
+            let pinned = JSON.parse(localStorage.getItem('pinnedNotifs') || '[]');
+            if(pinned.includes(compId)) {
+                pinned = pinned.filter(id => id !== compId);
+            } else {
+                pinned.push(compId);
+            }
+            localStorage.setItem('pinnedNotifs', JSON.stringify(pinned));
+            loadNotifications();
+        }
+
+        async function removeNotif(compId, type, dbId) {
+            let hidden = JSON.parse(localStorage.getItem('hiddenNotifs') || '[]');
+            if(!hidden.includes(compId)) hidden.push(compId);
+            localStorage.setItem('hiddenNotifs', JSON.stringify(hidden));
+            
+            if(type === 'private') {
+                try {
+                    await fetch(`${API_BASE}/notifications/private/${dbId}`, { method: 'DELETE' });
+                } catch(e) { console.error(e); }
+            }
+            loadNotifications();
+        }
+
+        async function loadNotifications() {
+            try {
+                const res = await fetch(`${API_BASE}/activities?user_id=${currentUser.id}`);
+                let activities = await res.json();
+                
+                let pinned = JSON.parse(localStorage.getItem('pinnedNotifs') || '[]');
+                let hidden = JSON.parse(localStorage.getItem('hiddenNotifs') || '[]');
+                
+                // Assign composite IDs and filter hidden
+                activities = activities.map(act => {
+                    act.compositeId = act.act_type === 'private' ? 'priv-' + act.id : 'glob-' + act.id;
+                    return act;
+                }).filter(act => !hidden.includes(act.compositeId));
+                
+                // Sort pinned to top
+                activities.sort((a, b) => {
+                    let aPinned = pinned.includes(a.compositeId) ? 1 : 0;
+                    let bPinned = pinned.includes(b.compositeId) ? 1 : 0;
+                    return bPinned - aPinned;
+                });
+
+                const container = document.getElementById('notificationsList');
+                if(activities.length === 0) {
+                    container.innerHTML = `<div class="text-center mt-20"><i class="far fa-bell-slash text-6xl text-gray-300 mb-4"></i><p class="text-gray-500 text-lg">No notifications yet.</p></div>`;
+                    return;
+                }
+                
+                container.innerHTML = activities.map((act, idx) => {
+                    let isPinned = pinned.includes(act.compositeId);
+                    let pinColor = isPinned ? 'text-yellow-500 hover:text-yellow-400' : 'text-gray-300 hover:text-yellow-500';
+                    let topActions = `
+                        <div class="flex space-x-3 mb-2 justify-end">
+                            <button onclick="togglePinNotif('${act.compositeId}')" class="${pinColor} transition"><i class="fas fa-thumbtack text-lg"></i></button>
+                            <button onclick="removeNotif('${act.compositeId}', '${act.act_type}', ${act.id})" class="text-red-300 hover:text-red-500 transition"><i class="fas fa-trash text-lg"></i></button>
+                        </div>
+                    `;
+
+                    if(act.act_type === 'private') {
+                        return `
+                        <div class="bg-green-50 p-5 rounded-2xl border ${isPinned ? 'border-yellow-400 border-2' : 'border-green-100'} shadow-sm mb-3 relative">
+                            ${topActions}
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 text-green-500 text-xl shadow-sm">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <h4 class="font-bold text-gray-800 text-sm mb-1">New Match!</h4>
+                                    <p class="text-gray-700 text-sm mt-1">${act.message}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                    }
+
+                    let icon = "fa-bell text-gray-500"; let bg = "bg-gray-100"; let title = "Notification";
+                    if(act.act_type === 'peer_teaching') { icon = "fa-chalkboard-teacher text-indigo-500"; bg = "bg-indigo-50"; title = "Peer Teaching Session"; }
+                    if(act.act_type === 'study_group') { icon = "fa-users text-teal-500"; bg = "bg-teal-50"; title = "Study Group Request"; }
+                    if(act.act_type === 'buddy_request') { icon = "fa-handshake text-blue-500"; bg = "bg-blue-50"; title = "Buddy Match Request"; }
+                    
+                    const isOwn = act.user_id === currentUser.id;
+                    const actionButtons = !isOwn ? `
+                        <div class="flex flex-col space-y-2 ml-2">
+                            <button onclick="expressInterest(${act.user_id})" class="px-4 py-2 bg-blue-500 text-white text-xs font-bold rounded-lg hover:bg-blue-600 transition shadow-sm">Interested</button>
+                        </div>
+                    ` : `<span class="text-xs text-gray-400 italic">Your Broadcast</span>`;
+
+                    return `
+                    <div class="bg-white p-5 rounded-2xl border ${isPinned ? 'border-yellow-400 border-2' : 'border-gray-100'} shadow-sm mb-3 relative">
+                        ${topActions}
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 rounded-full ${bg} flex items-center justify-center flex-shrink-0 text-xl shadow-sm">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-gray-800 text-sm mb-1">${act.user_name} <span class="font-normal text-gray-500">broadcasted a</span> ${title}</h4>
+                                <p class="text-gray-700 font-semibold mt-1">Subject: ${act.subject}</p>
+                                <p class="text-gray-600 text-sm mt-1">${act.details}</p>
+                                ${act.time_info ? `<p class="text-indigo-600 text-xs font-bold mt-2"><i class="far fa-clock mr-1"></i>${act.time_info}</p>` : ''}
+                            </div>
+                            ${actionButtons}
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        // --- PROFILE STATS ---
+        async function loadProfileStats() {
+            try {
+                if(!currentUser) return;
+                const res = await fetch(`${API_BASE}/profile/stats?user_id=${currentUser.id}`);
+                const stats = await res.json();
+                document.getElementById('statNotes').textContent = stats.notes_shared;
+                document.getElementById('statPoints').textContent = stats.points;
+                document.getElementById('statHelped').textContent = stats.helped_peers;
+                document.getElementById('profileDeptDisplay').textContent = stats.department;
+                document.getElementById('profileYearDisplay').textContent = stats.year;
+
+                // Points Breakdown Logic (for the dedicated Points Screen)
+                if(document.getElementById('pointsScreenTotal')) {
+                    document.getElementById('pointsScreenTotal').textContent = stats.points + ' pts';
+                }
+                const breakdown = document.getElementById('pointsBreakdownList');
+                breakdown.innerHTML = `
+                    <li class="flex justify-between items-center"><span class="flex items-center"><i class="fas fa-gift w-5 text-gray-400"></i>Welcome Bonus</span> <span class="font-bold text-gray-800">+50 pts</span></li>
+                    <li class="flex justify-between items-center"><span class="flex items-center"><i class="fas fa-file-alt w-5 text-gray-400"></i>Notes Shared (${stats.notes_shared}x)</span> <span class="font-bold text-gray-800">+${stats.notes_shared * 10} pts</span></li>
+                    <li class="flex justify-between items-center"><span class="flex items-center"><i class="fas fa-question-circle w-5 text-gray-400"></i>Doubts / Help (${stats.helped_peers}x)</span> <span class="font-bold text-gray-800">+${stats.helped_peers * 5} pts</span></li>
+                    <li class="flex justify-between items-center border-t border-gray-100 pt-3 mt-3"><span class="font-bold text-gray-800">Total Score</span> <span class="font-bold text-yellow-600 text-lg">${stats.points} pts</span></li>
+                `;
+            } catch(e) { console.error(e); }
+        }
+        function openEditProfile() {
+            if(!currentUser) return;
+            document.getElementById('editName').value = currentUser.name || '';
+            document.getElementById('editEmail').value = currentUser.email || '';
+            document.getElementById('editPhone').value = currentUser.phone || '';
+            document.getElementById('editDept').value = currentUser.department || '';
+            document.getElementById('editYear').value = currentUser.year || '';
+            document.getElementById('editInterests').value = currentUser.interests || '';
+            document.getElementById('editProfileModal').classList.remove('hidden');
+        }
+
+        async function saveProfile() {
+            const name = document.getElementById('editName').value;
+            const email = document.getElementById('editEmail').value;
+            const phone = document.getElementById('editPhone').value;
+            const dept = document.getElementById('editDept').value;
+            const year = document.getElementById('editYear').value;
+            const interests = document.getElementById('editInterests').value;
+
+            if(!name || !email || !dept || !year) return alert("Please fill required fields (Name, Email, Dept, Year).");
+
+            try {
+                const res = await fetch(`${API_BASE}/profile/${currentUser.id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ name, email, phone, department: dept, year, interests })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    
+                    document.getElementById('editProfileModal').classList.add('hidden');
+                    
+                    // Update displays
+                    if(document.getElementById('userNameDisplay')) {
+                        document.getElementById('userNameDisplay').textContent = "Hello, " + currentUser.name.split(' ')[0] + "!";
+                    }
+                    if(document.getElementById('profileNameDisplay')) {
+                        document.getElementById('profileNameDisplay').textContent = currentUser.name;
+                    }
+                    if(document.getElementById('profileDeptDisplay')) {
+                        document.getElementById('profileDeptDisplay').textContent = currentUser.department;
+                    }
+                    if(document.getElementById('profileYearDisplay')) {
+                        document.getElementById('profileYearDisplay').textContent = currentUser.year;
+                    }
+                } else {
+                    alert("Error saving profile: " + data.error);
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Failed to save profile.");
+            }
+        }
+    </script>
+</body>
+</html>
